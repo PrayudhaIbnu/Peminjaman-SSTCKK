@@ -1,5 +1,6 @@
 <template>
   <div class="max-w-screen mx-auto p-4 border rounded-lg bg-white shadow-md">
+    <!-- Alert for success message -->
     <form @submit.prevent="submitForm">
       <div class="mb-5">
         <label for="nama" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Barang</label>
@@ -32,6 +33,18 @@
       </button>
     </form>
   </div>
+  <div v-if="showAlert" id="alert-success" class="p-4 m-4 text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800" role="alert">
+    <div class="flex items-center">
+      <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 0a10 10 0 1 1-10 10A10 10 0 0 1 10 0Zm-1 14.5v-5h2v5h-2Zm0-7.5v-2h2v2h-2Z"/>
+      </svg>
+      <span class="sr-only">Success</span>
+      <h3 class="text-lg font-medium">Berhasil</h3>
+    </div>
+    <div class="mt-2 mb-4 text-sm">
+      Barang telah dipinjam.
+    </div>
+  </div>
 </template>
 
 <script>
@@ -41,7 +54,8 @@ export default {
       nama: '',
       peminjam: '',
       tanggal: '',
-      waktu: ''
+      waktu: '',
+      showAlert: false
     };
   },
   methods: {
@@ -54,11 +68,22 @@ export default {
         waktu: this.waktu
       });
 
+      // Show success alert
+      this.showAlert = true;
+
       // Clear the form
       this.nama = '';
       this.peminjam = '';
       this.tanggal = '';
       this.waktu = '';
+
+      // Refresh the page after a short delay
+      setTimeout(() => {
+        location.reload();
+      }, 1500); // Adjust delay as needed
+    },
+    dismissAlert() {
+      this.showAlert = false;
     }
   }
 }

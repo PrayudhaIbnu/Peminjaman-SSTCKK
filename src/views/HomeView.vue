@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-100 p-6">
     <div class="container mx-auto">
-      <h1 class="text-3xl font-bold text-center mb-6 uppercase">Peminjaman sstckk</h1>
+      <h1 class="text-3xl font-bold text-center mb-6 uppercase">Peminjaman Barang</h1>
       <BarangForm @tambah-barang="tambahBarang" />
       <BarangList :barang="barang" @kembalikan-barang="kembalikanBarang" />
     </div>

@@ -1,12 +1,56 @@
 <template>
   <div class="min-h-screen bg-gray-100">
     <div class="container mx-auto">
+      <!-- Alert for deletion confirmation -->
+      <div v-if="showAlertHapus" id="alert-hapus" class="p-4 m-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
+        <div class="flex items-center">
+          <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+          </svg>
+          <span class="sr-only">Warning</span>
+          <h3 class="text-lg font-medium">Konfirmasi Hapus Data</h3>
+        </div>
+        <div class="mt-2 mb-4 text-sm">
+          Apakah Anda yakin ingin menghapus data ini?
+        </div>
+        <div class="flex">
+          <button @click="confirmHapus" type="button" class="text-white bg-red-800 hover:bg-red-900 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 me-2 text-center inline-flex items-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+            Hapus
+          </button>
+          <button @click="dismissAlertHapus" type="button" class="text-red-800 bg-transparent border border-red-800 hover:bg-red-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-red-600 dark:border-red-600 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800" aria-label="Close">
+            Batal
+          </button>
+        </div>
+      </div>
+
+      <!-- Alert for return confirmation -->
+      <div v-if="showAlertPengembalian" id="alert-pengembalian" class="p-4 m-4 text-yellow-800 border border-yellow-300 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300 dark:border-yellow-800" role="alert">
+        <div class="flex items-center">
+          <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 1a9 9 0 0 1 9 9 9 9 0 0 1-9 9 9 9 0 0 1-9-9 9 9 0 0 1 9-9Zm-1 8a1 1 0 0 1 2 0v3a1 1 0 0 1-2 0v-3Zm0-4a1 1 0 0 1 2 0v1a1 1 0 0 1-2 0V5Z"/>
+          </svg>
+          <span class="sr-only">Info</span>
+          <h3 class="text-lg font-medium">Konfirmasi Pengembalian Barang</h3>
+        </div>
+        <div class="mt-2 mb-4 text-sm">
+          Pastikan tidak ada kerusakan pada barang!
+        </div>
+        <div class="flex">
+          <button @click="confirmPengembalian" type="button" class="text-white bg-yellow-800 hover:bg-yellow-900 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs px-3 py-1.5 me-2 text-center inline-flex items-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-yellow-800">
+            Kembalikan
+          </button>
+          <button @click="dismissAlertPengembalian" type="button" class="text-yellow-800 bg-transparent border border-yellow-800 hover:bg-yellow-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-green-600 dark:border-green-600 dark:text-green-500 dark:hover:text-white dark:focus:ring-yellow-800" aria-label="Close">
+            Batal
+          </button>
+        </div>
+      </div>
+
       <div class="flex justify-end mt-4 space-x-4">
         <button @click="downloadCSV" class="btn btn-success">Download CSV</button>
         <button @click="downloadPDF" class="btn btn-primary">Download PDF</button>
       </div>
       <div class="mt-4 relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-center text-sm text-gray-500 dark:text-gray-400">
+        <table class="w-full text-center text-sm bg-white text-gray-500 dark:text-gray-400">
           <thead class="text-xs text-center text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" class="px-6 py-3">Nama Barang</th>
@@ -18,8 +62,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(barang, index) in barang" :key="index"
-              class="odd:bg-white even:bg-gray-50 border-b dark:border-gray-700">
+            <tr v-for="(barang, index) in barang" :key="index" class="odd:bg-white even:bg-gray-50 border-b dark:border-gray-700">
               <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 {{ barang.nama }}
               </td>
@@ -34,9 +77,13 @@
                 </span>
               </td>
               <td class="px-6 py-4">
-                <button @click="kembalikanBarang(index)" :disabled="barang.dikembalikan"
-                  class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <button @click="showAlertPengembalianConfirmation(index)" :disabled="barang.dikembalikan"
+                  class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-xs px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                   Kembalikan
+                </button>
+                <button @click="showAlertHapusConfirmation(index)"
+                  class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-xs px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                  Hapus
                 </button>
               </td>
             </tr>
@@ -53,20 +100,52 @@ import { exportToCSV, exportToPDF } from '../utils/export';
 export default {
   data() {
     return {
-      barang: []
+      barang: [],
+      showAlertHapus: false,
+      showAlertPengembalian: false,
+      itemToDelete: null,
+      itemToReturn: null
     };
   },
   methods: {
-    kembalikanBarang(index) {
-      const now = new Date();
-      const tanggalPengembalian = now.toISOString().split('T')[0];
-      const waktuPengembalian = now.toTimeString().split(' ')[0];
+    showAlertHapusConfirmation(index) {
+      this.itemToDelete = index;
+      this.showAlertHapus = true;
+    },
+    showAlertPengembalianConfirmation(index) {
+      this.itemToReturn = index;
+      this.showAlertPengembalian = true;
+    },
+    confirmHapus() {
+      if (this.itemToDelete !== null) {
+        this.barang.splice(this.itemToDelete, 1);
+        this.simpanKeLocalStorage();
+        this.showAlertHapus = false;
+        this.itemToDelete = null;
+      }
+    },
+    confirmPengembalian() {
+      if (this.itemToReturn !== null) {
+        const now = new Date();
+        const tanggalPengembalian = now.toISOString().split('T')[0];
+        const waktuPengembalian = now.toTimeString().split(' ')[0];
 
-      this.barang[index].dikembalikan = true;
-      this.barang[index].tanggalPengembalian = tanggalPengembalian;
-      this.barang[index].waktuPengembalian = waktuPengembalian;
+        this.barang[this.itemToReturn].dikembalikan = true;
+        this.barang[this.itemToReturn].tanggalPengembalian = tanggalPengembalian;
+        this.barang[this.itemToReturn].waktuPengembalian = waktuPengembalian;
 
-      this.simpanKeLocalStorage();
+        this.simpanKeLocalStorage();
+        this.showAlertPengembalian = false;
+        this.itemToReturn = null;
+      }
+    },
+    dismissAlertHapus() {
+      this.showAlertHapus = false;
+      this.itemToDelete = null;
+    },
+    dismissAlertPengembalian() {
+      this.showAlertPengembalian = false;
+      this.itemToReturn = null;
     },
     simpanKeLocalStorage() {
       localStorage.setItem('barangList', JSON.stringify(this.barang));
