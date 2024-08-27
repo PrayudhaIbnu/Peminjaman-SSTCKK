@@ -1,52 +1,48 @@
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
-export function exportToCSV(barang) {
-  let csvContent = "data:text/csv;charset=utf-8,";
-  csvContent += "Nama Barang,Peminjam,Tanggal Peminjaman,Tanggal Pengembalian,Status\n";
+// Fungsi untuk mengunduh file CSV
+export function exportToCSV(data) {
+  const csvData = data.map(item => ({
+    Nama: item.nama,
+    Peminjam: item.peminjam,
+    TanggalPeminjaman: item.tanggal + ' - ' + item.waktu,
+    TanggalPengembalian: item.dikembalikan ? item.tanggalPengembalian + ' - ' + item.waktuPengembalian : '-',
+    Status: item.dikembalikan ? 'Dikembalikan' : 'Belum Dikembalikan'
+  }));
   
-  barang.forEach((item) => {
-    const status = item.dikembalikan ? 'Dikembalikan' : 'Belum Dikembalikan';
-    const tanggalPengembalian = item.dikembalikan ? item.tanggalPengembalian + " - " + item.waktuPengembalian : '-';
-    const row = `${item.nama},${item.peminjam},${item.tanggal} - ${item.waktu},${tanggalPengembalian},${status}`;
-    csvContent += row + "\n";
-  });
+  const csvContent = "data:text/csv;charset=utf-8,"
+    + Object.keys(csvData[0]).join(",") + "\n"
+    + csvData.map(row => Object.values(row).join(",")).join("\n");
 
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "barang_list.csv");
-  document.body.appendChild(link); // Diperlukan untuk Firefox
+  link.setAttribute("download", "barang_data.csv");
+  document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link); // Menghapus link setelah digunakan
+  document.body.removeChild(link);
 }
 
-export function exportToPDF(barang) {
+// Fungsi untuk mengunduh file PDF
+export function exportToPDF(data) {
   const doc = new jsPDF();
-  let yOffset = 10;
+  doc.text("Daftar Barang", 10, 10);
 
-  doc.setFontSize(16);
-  doc.text("Daftar Barang Peminjaman", 10, yOffset);
-  yOffset += 10;
+  const tableColumn = ["Nama Barang", "Peminjam", "Tanggal Peminjaman", "Tanggal Pengembalian", "Status"];
+  const tableRows = data.map(item => [
+    item.nama,
+    item.peminjam,
+    item.tanggal + ' - ' + item.waktu,
+    item.dikembalikan ? item.tanggalPengembalian + ' - ' + item.waktuPengembalian : '-',
+    item.dikembalikan ? 'Dikembalikan' : 'Belum Dikembalikan'
+  ]);
 
-  barang.forEach((item, index) => {
-    const status = item.dikembalikan ? 'Dikembalikan' : 'Belum Dikembalikan';
-    const tanggalPengembalian = item.dikembalikan ? item.tanggalPengembalian + " - " + item.waktuPengembalian : '-';
-
-    doc.setFontSize(12);
-    doc.text(`No: ${index + 1}`, 10, yOffset);
-    doc.text(`Nama Barang: ${item.nama}`, 10, yOffset + 6);
-    doc.text(`Peminjam: ${item.peminjam}`, 10, yOffset + 12);
-    doc.text(`Tanggal Peminjaman: ${item.tanggal} - ${item.waktu}`, 10, yOffset + 18);
-    doc.text(`Tanggal Pengembalian: ${tanggalPengembalian}`, 10, yOffset + 24);
-    doc.text(`Status: ${status}`, 10, yOffset + 30);
-
-    yOffset += 40;
-
-    if (yOffset > 270) {
-      doc.addPage();
-      yOffset = 10;
-    }
+  autoTable(doc, {
+    head: [tableColumn],
+    body: tableRows,
+    startY: 20
   });
 
-  doc.save("barang_list.pdf");
+  doc.save('barang_data.pdf');
 }
