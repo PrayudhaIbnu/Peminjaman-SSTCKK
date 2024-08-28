@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-100">
     <div class="container mx-auto">
       <!-- Alert for deletion confirmation -->
-      <div v-if="showAlertHapus" id="alert-hapus"
+      <!-- <div v-if="showAlertHapus" id="alert-hapus"
         class="p-4 m-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
         role="alert">
         <div class="flex items-center">
@@ -28,7 +28,7 @@
             Batal
           </button>
         </div>
-      </div>
+      </div> -->
 
       <!-- Alert for return confirmation -->
       <div v-if="showAlertPengembalian" id="alert-pengembalian"
@@ -95,10 +95,10 @@
                   class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-xs px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                   Kembalikan
                 </button>
-                <button @click="showAlertHapusConfirmation(index)"
+                <!-- <button @click="showAlertHapusConfirmation(index)"
                   class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-xs px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
                   Hapus
-                </button>
+                </button> -->
               </td>
             </tr>
           </tbody>
@@ -119,7 +119,7 @@ export default {
   data() {
     return {
       barang: [],
-      showAlertHapus: false,
+      // showAlertHapus: false,
       showAlertPengembalian: false,
       itemToDelete: null,
       itemToReturn: null,
@@ -138,31 +138,31 @@ export default {
         this.barang = data;
       }
     },
-    showAlertHapusConfirmation(index) {
-      this.itemToDelete = index;
-      this.showAlertHapus = true;
-    },
+    // showAlertHapusConfirmation(index) {
+    //   this.itemToDelete = index;
+    //   this.showAlertHapus = true;
+    // },
     showAlertPengembalianConfirmation(index) {
       this.itemToReturn = index;
       this.showAlertPengembalian = true;
     },
-    async confirmHapus() {
-      if (this.itemToDelete !== null) {
-        const barangId = this.barang[this.itemToDelete].id;
-        const { error } = await supabase
-          .from('barang')
-          .delete()
-          .eq('id', barangId);
+    // async confirmHapus() {
+    //   if (this.itemToDelete !== null) {
+    //     const barangId = this.barang[this.itemToDelete].id;
+    //     const { error } = await supabase
+    //       .from('barang')
+    //       .delete()
+    //       .eq('id', barangId);
 
-        if (!error) {
-          this.barang.splice(this.itemToDelete, 1);
-          this.showAlertHapus = false;
-          this.itemToDelete = null;
-        } else {
-          console.error('Error deleting data:', error);
-        }
-      }
-    },
+    //     if (!error) {
+    //       this.barang.splice(this.itemToDelete, 1);
+    //       this.showAlertHapus = false;
+    //       this.itemToDelete = null;
+    //     } else {
+    //       console.error('Error deleting data:', error);
+    //     }
+    //   }
+    // },
     async confirmPengembalian() {
       if (this.itemToReturn !== null) {
         const now = new Date();
@@ -186,10 +186,10 @@ export default {
         }
       }
     },
-    dismissAlertHapus() {
-      this.showAlertHapus = false;
-      this.itemToDelete = null;
-    },
+    // dismissAlertHapus() {
+    //   this.showAlertHapus = false;
+    //   this.itemToDelete = null;
+    // },
     dismissAlertPengembalian() {
       this.showAlertPengembalian = false;
       this.itemToReturn = null;
