@@ -35,6 +35,12 @@ export default {
       barang.waktuPengembalian = waktuPengembalian;
 
       saveToLocalStorage(this.barang);
+    },
+    downloadCSV() {
+      exportToCSV(this.barang);
+    },
+    downloadPDF() {
+      exportToPDF(this.barang);
     }
   },
   mounted() {
